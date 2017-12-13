@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no"
+	<title>Game</title>
+	<style>
+		canvas{width:100%;}
+		body{padding:0;
+			margin:0;
+			background-color:white;}
+	</style>
+</head>
+<body>
+	<canvas width="500" height="300" id="myCanvas"></canvas>
+	<script type="text/javascript">
+	
+window.addEventListener('load',function(){
+//enemies object
+var isLive=true;
+var sprites={};
+var enemies= [
+				{
+					x:100,
+					y:150,
+					speedX:0,
+					speedY:2,
+					w:20,
+					h:20
+				},
+				{
+					x:200,
+					y:150,
+					speedX:0,
+					speedY:4,
+					w:20,
+					h:20
+				},
+				{
+					x:300,
+					y:100,
+					speedX:0,
+					speedY:4,
+					w:20,
+					h:20
+				},
+				{
+					x:250,
+					y:150,
+					speedX:0,
+					speedY:3,
+					w:20,
+					h:20
+				}
+				];
+//player object
+var player={
+					x:10,
+					y:150,
+					speedX:2,
+					w:30,
+					h:30,
+					isMoving:false
+			}
+var goal={
+					x:380,
+					y:150,
+					w:30,
+					h:30
+}
+//getting canvas
+var canvas=document.getElementById("myCanvas");
+//making context of canvas
+var ctx=canvas.getContext("2d");
+var yesMoving=function()
+{player.isMoving=true;};
+var notMoving=function()
+{player.isMoving=false;}
+canvas.addEventListener("mousedown",yesMoving);
+canvas.addEventListener("mouseup",notMoving);
+canvas.addEventListener("touchstart",yesMoving);
+canvas.addEventListener("touchend",notMoving);
+var load=function(){
+	sprites.player=new Image();
+	sprites.player.src="images/player.png";
+	sprites.goal=new Image();
+	sprites.goal.src="images/goal.png";
+	sprites.background=new Image();
+	sprites.background.src="images/background.jpg";
+	sprites.enemy=new Image();
+	sprites.enemy.src="images/enemy.jpg";
+
+};
+
+var collision=function(rect1,rect2)
+{var closeOnX = Math.abs(rect1.x-rect2.x)<=Math.max(rect1.w,rect2.w);
+	var closeOnY = Math.abs(rect1.y-rect2.y)<=Math.max(rect1.h,rect2.h);
+	return closeOnX && closeOnY;
+
+};
+//update function
+var update=function()
+{		if (player.isMoving)
+		{
+			player.x+=player.speedX;
+		}
+
+	for(var i=0;i<4;i++)
+	{	if(collision(player,enemies[i]) )
+		{isLive=false;
+		alert("Game Over!");
+		window.location=""; 
+		}
+		if(collision(player,goal) )
+		{isLive=false;
+		alert("you have won!");
+		window.location=""; 
+		}
+		if(enemies[i].y>280)
+		{	enemies[i].y=280;
+			enemies[i].speedY=-enemies[i].speedY;
+		}
+		else if(enemies[i].y<20)
+			{	enemies[i].y=20;
+				enemies[i].speedY=-enemies[i].speedY;
+			}
+		enemies[i].y=enemies[i].y + enemies[i].speedY;
+	}
+};
+
+//draw function
+var draw=function()
+{	//clear canvas
+	/*ctx.clearRect(0,0,500,300);
+	ctx.fillStyle="#00FF00";
+	ctx.fillRect(goal.x,goal.y,goal.w,goal.h);
+	//draw player
+	ctx.fillStyle="#00FF00";
+	ctx.fillRect(player.x,player.y,player.w,player.h);
+	//draw eemies
+	ctx.fillStyle="rgb(200,0,200)";
+	for(var i=0;i<4;i++)
+{
+	ctx.fillRect(enemies[i].x,enemies[i].y,enemies[i].w,enemies[i].h);
+}*/
+ctx.clearRect(0,0,500,300);
+ctx.drawImage(sprites.background,0,0);
+ctx.drawImage(sprites.player,player.x,player.y);
+ctx.drawImage(sprites.goal,goal.x,goal.y);
+for(var i=0;i<4;i++){
+ctx.drawImage(sprites.enemy,enemies[i].x,enemies[i].y);}
+};
+
+//step function
+var step=function()
+{
+	update();
+	draw();
+	if(isLive)
+	{
+		window.requestAnimationFrame(step);
+	}
+};
+load();
+//calling step function
+step();
+
+//end of load event 
+});
+document.write("hey");
+</script>
+
+
+
+</body>
+</html>
